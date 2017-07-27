@@ -5,9 +5,11 @@ from datetime import datetime, timedelta
 import collections
 import json
 from operator import itemgetter
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
-client = MongoClient("mongodb://localhost:27017")
+client = AsyncIOMotorClient("mongodb://localhost:27017")
 db = client.spotonv4
 
 
@@ -20,7 +22,7 @@ class Con:
         self.origin = docknodict['origin']
         self.location=docknodict['location']
         self.destination=docknodict['destination']
-        condata=db.master.find_one({'origin':self.origin,'destination':self.destination})
+        condata=yield from db.master.find_one({'origin':self.origin,'destination':self.destination})
         conpath=condata['conpath']
         scheduledepsdict={}
         for i in condata["legdata"].values():
@@ -80,8 +82,11 @@ class Con:
 
 async def handle(request):
     data = await request.json()
+    res = Con(data).returndata()
+    print (res)
     try:
         res = Con(data).returndata()
+        print (res)
     except:
         res = 'Error'+str(data)
 
