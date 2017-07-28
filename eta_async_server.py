@@ -12,8 +12,7 @@ db = client.spotonv4
 
 
 class Con:
-    def __init__(self,docknodict):
-        global db
+    def __init__(self,docknodict,db):
 
         self.docno = docknodict['con']
         self.arratloc = datetime.strptime(docknodict['arratloc'],"%Y-%m-%d %H:%M:%S")
@@ -81,7 +80,7 @@ class Con:
 async def handle(request):
     data = await request.json()
     try:
-        res = Con(data).returndata()
+        res = Con(data,db).returndata()
     except:
         res = 'Error'+str(data)
 
